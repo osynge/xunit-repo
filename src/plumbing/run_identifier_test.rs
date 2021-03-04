@@ -4,7 +4,9 @@ use crate::plumbing::run_identifier;
 
 #[test]
 fn add_run_identifier() {
-    let conn = db::establish_connection().get().unwrap();
+    let conn = db::establish_connection_pool(&"memory://", true)
+        .get()
+        .unwrap();
     let project_sk = Some(String::from(""));
     let project_identifier = Some(String::from(""));
     let project_humanname = Some(String::from(""));
@@ -37,5 +39,5 @@ fn add_run_identifier() {
     .unwrap();
     println!("add_1={:#?}", add_1);
     println!("add_2={:#?}", add_2);
-    assert!(add_1.id == 0);
+    assert!(add_1.id == 1);
 }
