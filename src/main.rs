@@ -2,10 +2,13 @@
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
+#[macro_use]
+extern crate log;
 
 use xunit_repo_db::db;
 use xunit_repo_db::model;
 use xunit_repo_db::schema;
+mod configuration;
 mod plumbing;
 mod routes;
 use actix_web::{web, App, HttpServer};
@@ -17,8 +20,36 @@ pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    let database_url = std::env::var("DATABASE_URL").expect("Database not found");
-    let migrate = std::env::var("DATABASE_MIGRATE").is_ok();
+    let app_cfg = configuration::configure().unwrap();
+    let database_url = match app_cfg.database_url {
+        Some(url) => url,
+        None => {
+            let custom_error =
+                std::io::Error::new(std::io::ErrorKind::Other, "No database_url specified");
+            return Err(custom_error);
+        }
+    };
+    let host = match app_cfg.server_host {
+        Some(host) => host,
+        None => {
+            let custom_error = std::io::Error::new(std::io::ErrorKind::Other, "No host specified");
+            return Err(custom_error);
+        }
+    };
+    let port = match app_cfg.server_port {
+        Some(port) => port,
+        None => {
+            let custom_error = std::io::Error::new(std::io::ErrorKind::Other, "No port specified");
+            return Err(custom_error);
+        }
+    };
+
+    let bind = format!("{}:{}", host, port);
+
+    let migrate = match app_cfg.database_migrate {
+        Some(database_migrate) => database_migrate,
+        None => false,
+    };
 
     let database_pool = db::establish_connection_pool(&database_url, migrate);
     HttpServer::new(move || {
@@ -47,7 +78,7 @@ async fn main() -> std::io::Result<()> {
             )
             .route("/upload", web::post().to(routes::upload))
     })
-    .bind("127.0.0.1:8888")?
+    .bind(bind)?
     .run()
     .await
 }

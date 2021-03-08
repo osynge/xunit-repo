@@ -20,6 +20,11 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 xunit-repo-interface = { git = "https://github.com/osynge/xunit-repo-interface.git", branch = "main" }
 xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
 diesel_migrations = "1.4.0"
+clap = "2"
+log = "*"
+thiserror = "*"
+toml = "*"
+dirs = "*"
 
 [dev-dependencies]
 tempdir = "0.3"
