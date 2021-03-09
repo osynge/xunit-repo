@@ -21,6 +21,7 @@ pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let app_cfg = configuration::configure().unwrap();
+    println!("{:?}", app_cfg);
     let database_url = match app_cfg.database_url {
         Some(url) => url,
         None => {
@@ -29,14 +30,14 @@ async fn main() -> std::io::Result<()> {
             return Err(custom_error);
         }
     };
-    let host = match app_cfg.server_host {
+    let host = match app_cfg.host {
         Some(host) => host,
         None => {
             let custom_error = std::io::Error::new(std::io::ErrorKind::Other, "No host specified");
             return Err(custom_error);
         }
     };
-    let port = match app_cfg.server_port {
+    let port = match app_cfg.port {
         Some(port) => port,
         None => {
             let custom_error = std::io::Error::new(std::io::ErrorKind::Other, "No port specified");
@@ -51,7 +52,13 @@ async fn main() -> std::io::Result<()> {
         None => false,
     };
 
-    let database_pool = db::establish_connection_pool(&database_url, migrate);
+    let database_pool = match db::establish_connection_pool(&database_url, migrate) {
+        Ok(pool) => pool,
+        Err(err) => {
+            let custom_error = std::io::Error::new(std::io::ErrorKind::Other, err);
+            return Err(custom_error);
+        }
+    };
     HttpServer::new(move || {
         App::new()
             .data(database_pool.clone())

@@ -109,11 +109,11 @@ pub(super) fn cli_clap() -> super::configuration::Config {
         (false, true) => Some(false),
         (false, false) => None,
     };
-    let server_host = match matches.value_of("host") {
+    let host = match matches.value_of("host") {
         Some(p) => Some(String::from(p)),
         None => None,
     };
-    let server_port = match matches.value_of("port") {
+    let port = match matches.value_of("port") {
         Some(p) => match p.parse() {
             Ok(f) => Some(f),
             Err(_) => None,
@@ -125,7 +125,7 @@ pub(super) fn cli_clap() -> super::configuration::Config {
         log_level,
         database_url,
         database_migrate,
-        server_host,
-        server_port,
+        host,
+        port,
     }
 }

@@ -3,7 +3,8 @@ use crate::plumbing::keyvalue;
 
 #[test]
 fn add_key_value() {
-    let conn = db::establish_connection_pool(&"memory://", true)
+    let conn = db::establish_connection_pool(&"sqlite://memory", true)
+        .unwrap()
         .get()
         .unwrap();
     let key_1 = String::from("Elephant");
@@ -14,7 +15,8 @@ fn add_key_value() {
 
 #[test]
 fn add_key_value_twice() {
-    let conn = db::establish_connection_pool(&"memory://", true)
+    let conn = db::establish_connection_pool(&"sqlite://memory", true)
+        .unwrap()
         .get()
         .unwrap();
     let key_1 = String::from("Elephant");

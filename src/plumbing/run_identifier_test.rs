@@ -4,7 +4,8 @@ use crate::plumbing::run_identifier;
 
 #[test]
 fn add_run_identifier() {
-    let conn = db::establish_connection_pool(&"memory://", true)
+    let conn = db::establish_connection_pool(&"sqlite://memory", true)
+        .unwrap()
         .get()
         .unwrap();
     let project_sk = Some(String::from(""));

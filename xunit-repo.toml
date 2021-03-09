@@ -1,0 +1,14 @@
+# Set the database connection database url
+#
+# This can be absolute or relative on in memory
+
+database_url='sqlite:/tmp/absolute.db'
+
+# Should we run database migration
+database_migrate=false
+
+# Hostname to bind on
+host="127.0.0.1"
+
+# Port to listen to
+port=8080

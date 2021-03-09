@@ -4,8 +4,8 @@ pub(crate) struct Config {
     pub(crate) log_level: Option<i8>,
     pub(crate) database_url: Option<String>,
     pub(crate) database_migrate: Option<bool>,
-    pub(crate) server_host: Option<String>,
-    pub(crate) server_port: Option<u32>,
+    pub(crate) host: Option<String>,
+    pub(crate) port: Option<u32>,
 }
 
 impl Config {
@@ -16,8 +16,8 @@ impl Config {
             log_level: None,
             database_url: None,
             database_migrate: None,
-            server_host: None,
-            server_port: None,
+            host: None,
+            port: None,
         }
     }
     pub(super) fn copy_with_default(&self, src: &Config) -> Config {
@@ -39,22 +39,22 @@ impl Config {
             None => None,
         };
         let database_migrate = self.database_migrate.or_else(|| src.database_migrate);
-        let server_host = match self
-            .server_host
+        let host = match self
+            .host
             .as_ref()
-            .or_else(|| src.server_host.as_ref())
+            .or_else(|| src.host.as_ref())
         {
             Some(p) => Some(p.clone()),
             None => None,
         };
-        let server_port = self.server_port.or_else(|| src.server_port);
+        let port = self.port.or_else(|| src.port);
         Config {
             config_file,
             log_level,
             database_url,
             database_migrate,
-            server_host,
-            server_port,
+            host,
+            port,
         }
     }
 }
@@ -68,8 +68,8 @@ mod tests {
             log_level: Some(1),
             database_url: Some(String::from("database_url")),
             database_migrate: Some(true),
-            server_host: Some(String::from("server_host")),
-            server_port: Some(8080),
+            host: Some(String::from("host")),
+            port: Some(8080),
         }
     }
     fn gen_config_with_data_2() -> Config {
@@ -78,8 +78,8 @@ mod tests {
             log_level: Some(1),
             database_url: Some(String::from("2")),
             database_migrate: Some(false),
-            server_host: Some(String::from("2")),
-            server_port: Some(2),
+            host: Some(String::from("2")),
+            port: Some(2),
         }
     }
 
