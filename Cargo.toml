@@ -25,6 +25,9 @@ log = "*"
 thiserror = "*"
 toml = "*"
 dirs = "*"
+# only for static compilation for minimal docker builds
+libsqlite3-sys = { version = "*", features = ["bundled"], optional=true}
+
 
 [dev-dependencies]
 tempdir = "0.3"
