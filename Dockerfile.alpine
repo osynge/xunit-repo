@@ -1,0 +1,36 @@
+FROM ekidd/rust-musl-builder:stable as builder
+
+WORKDIR /app
+ADD --chown=rust:rust . /app/xunit_repo
+WORKDIR /app/xunit_repo
+RUN pwd
+RUN ls -al . target
+RUN rm -rf xunit_repo/target
+RUN ls -al
+RUN cargo build --release --features=libsqlite3-sys
+RUN ls /app/xunit_repo/target/x86_64-unknown-linux-musl/release/xunit_repo
+
+FROM alpine:latest
+
+ARG APP=/usr/src/app
+
+EXPOSE 8000
+
+ENV TZ=Etc/UTC \
+    APP_USER=appuser
+
+RUN addgroup -S $APP_USER \
+    && adduser -S -g $APP_USER $APP_USER
+
+RUN apk update \
+    && apk add --no-cache ca-certificates tzdata \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=builder /app/xunit_repo/target/x86_64-unknown-linux-musl/release/xunit_repo ${APP}/xunit_repo
+
+RUN chown -R $APP_USER:$APP_USER ${APP}
+
+USER $APP_USER
+WORKDIR ${APP}
+
+CMD ["./xunit_repo"]
