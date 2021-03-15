@@ -66,7 +66,11 @@ pub async fn environment_add(
     let environment = item.into_inner();
     let conn = pool.get().unwrap();
     Ok(web::block(move || {
-        add_environment(&conn, environment.sk.as_ref(), environment.key_value.as_ref())
+        add_environment(
+            &conn,
+            environment.sk.as_ref(),
+            environment.key_value.as_ref(),
+        )
     })
     .await
     .map(|project| HttpResponse::Created().json(project))

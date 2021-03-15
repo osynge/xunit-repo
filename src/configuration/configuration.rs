@@ -39,11 +39,7 @@ impl Config {
             None => None,
         };
         let database_migrate = self.database_migrate.or_else(|| src.database_migrate);
-        let host = match self
-            .host
-            .as_ref()
-            .or_else(|| src.host.as_ref())
-        {
+        let host = match self.host.as_ref().or_else(|| src.host.as_ref()) {
             Some(p) => Some(p.clone()),
             None => None,
         };

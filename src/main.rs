@@ -4,6 +4,7 @@ extern crate diesel;
 extern crate diesel_migrations;
 #[macro_use]
 extern crate log;
+use actix_files::Files;
 
 use xunit_repo_db::db;
 use xunit_repo_db::model;
@@ -84,6 +85,8 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(routes::test_case_pass_add),
             )
             .route("/upload", web::post().to(routes::upload))
+            // static files
+            .service(Files::new("/static", "static").show_files_listing())
     })
     .bind(bind)?
     .run()
