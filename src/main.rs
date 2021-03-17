@@ -62,6 +62,8 @@ async fn main() -> std::io::Result<()> {
     };
     HttpServer::new(move || {
         App::new()
+            // Set a larger default json message size.
+            .data(web::JsonConfig::default().limit(1024 * 1024 * 50))
             .data(database_pool.clone())
             .route("/", web::get().to(routes::home))
             .route("/project_add", web::post().to(routes::project_add))

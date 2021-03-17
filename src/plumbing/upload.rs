@@ -57,7 +57,6 @@ pub fn get_upload(
                 let test_case = add_test_case(conn, &tc.name, test_case_class.id, test_suite.id)?;
                 match (&tc.skipped, &tc.failure, &tc.error) {
                     (Some(skipmsg), None, None) => {
-                        println!("Skip");
                         add_test_case_skipped(
                             conn,
                             test_file_run.id,
@@ -67,7 +66,6 @@ pub fn get_upload(
                         )?;
                     }
                     (None, Some(failmsg), None) => {
-                        println!("fail");
                         add_test_case_failure(
                             conn,
                             test_file_run.id,
@@ -94,7 +92,6 @@ pub fn get_upload(
                         )?;
                     }
                     (None, None, None) => {
-                        println!("Pass");
                         add_test_case_pass(conn, run.id, test_case.id, &Some(tc.time))?;
                     }
                     _ => {
