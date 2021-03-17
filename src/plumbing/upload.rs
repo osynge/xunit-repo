@@ -92,7 +92,7 @@ pub fn get_upload(
                         )?;
                     }
                     (None, None, None) => {
-                        add_test_case_pass(conn, run.id, test_case.id, &Some(tc.time))?;
+                        add_test_case_pass(conn, test_file_run.id, test_case.id, &Some(tc.time))?;
                     }
                     _ => {
                         println!("Cannot mix");
