@@ -25,6 +25,7 @@ pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let app_cfg = configuration::configure().unwrap();
+
     LogTracer::init().expect("Unable to setup log tracer!");
     let app_name = concat!(env!("CARGO_PKG_NAME"), "-", env!("CARGO_PKG_VERSION")).to_string();
     let (non_blocking_writer, _guard) = tracing_appender::non_blocking(std::io::stdout());
@@ -34,6 +35,11 @@ async fn main() -> std::io::Result<()> {
         .with(JsonStorageLayer)
         .with(bunyan_formatting_layer);
     tracing::subscriber::set_global_default(subscriber).unwrap();
+    /*
+    How to use normal logging
+        let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
+        tracing_subscriber::fmt().with_writer(non_blocking).init()
+    */
     info!("{:?}", app_cfg);
     let database_url = match app_cfg.database_url {
         Some(url) => url,
@@ -100,8 +106,6 @@ async fn main() -> std::io::Result<()> {
                 web::post().to(routes::test_case_pass_add),
             )
             .route("/upload", web::post().to(routes::upload))
-            // static files
-            .service(Files::new("/static", "static").show_files_listing())
     })
     .bind(bind)?
     .run()
