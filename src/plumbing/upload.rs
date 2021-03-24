@@ -19,20 +19,20 @@ pub fn get_upload(
     conn: &DbConnection,
     item: &xunit_repo_interface::Upload,
 ) -> Result<crate::model::project::Project, diesel::result::Error> {
-    println!("got:{:#?}", item);
+    info!("got:{:#?}", item);
     let project = add_project(
         conn,
         item.project.sk.as_ref(),
         item.project.identifier.as_ref(),
         item.project.human_name.as_ref(),
     )?;
-    println!("project:{:#?}", project);
+    info!("project:{:#?}", project);
     let env = add_environment(
         conn,
         item.environment.sk.as_ref(),
         Some(&item.environment.key_value),
     )?;
-    println!("env:{:#?}", env);
+    info!("env:{:#?}", env);
     let run = add_run_identifier(
         conn,
         project.id,
@@ -40,9 +40,9 @@ pub fn get_upload(
         item.run.client_identifier.as_ref(),
         None,
     )?;
-    println!("run:{:#?}", run);
+    info!("run:{:#?}", run);
     let tr = add_test_run(&conn, run.id, env.id)?;
-    println!("tr:{:#?}", tr);
+    info!("tr:{:#?}", tr);
 
     for file_item in item.files.iter() {
         let dir = &file_item.directory;
@@ -95,7 +95,7 @@ pub fn get_upload(
                         add_test_case_pass(conn, test_file_run.id, test_case.id, &Some(tc.time))?;
                     }
                     _ => {
-                        println!("Cannot mix");
+                        info!("Cannot mix");
                     }
                 }
             }
