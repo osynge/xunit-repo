@@ -79,12 +79,6 @@ pub(super) fn cli_clap() -> super::configuration::Config {
                 .value_name("PORT")
                 .help("Sets the host's port.")
                 .takes_value(true),
-        )
-        .arg(
-            Arg::with_name("globs")
-                .help("Sets the input files to use, wild cards are allowed.")
-                .value_name("GLOB")
-                .multiple(true),
         );
 
     let matches = application.get_matches();
