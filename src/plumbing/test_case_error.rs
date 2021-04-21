@@ -1,4 +1,4 @@
-use crate::model::test_case_error::{TestCaseError, TestCaseErrorJson, TestCaseErrorNew};
+use crate::model::test_case_error::{TestCaseError, TestCaseErrorNew};
 use crate::DbConnection;
 use diesel::dsl::insert_into;
 use diesel::prelude::*;
