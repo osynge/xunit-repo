@@ -20,6 +20,10 @@ use actix_web::http::StatusCode;
 use actix_web::{web, Error, HttpResponse};
 use anyhow::Result;
 
+pub async fn health() -> HttpResponse {
+    HttpResponse::Ok().finish()
+}
+
 pub async fn home() -> Result<HttpResponse, Error> {
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
