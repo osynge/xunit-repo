@@ -36,6 +36,7 @@ tracing-actix-web = "*"
 tracing-bunyan-formatter = "*"
 tracing-log = "*"
 tracing-appender = "*"
+actix-web-prom = "0.5"
 
 [dev-dependencies]
 tempdir = "0.3"
