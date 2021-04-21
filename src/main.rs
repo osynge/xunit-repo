@@ -5,6 +5,7 @@ extern crate diesel_migrations;
 #[macro_use]
 extern crate log;
 use actix_files::Files;
+use actix_web_prom::PrometheusMetrics;
 use tracing_actix_web::TracingLogger;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
@@ -78,13 +79,16 @@ async fn main() -> std::io::Result<()> {
             return Err(custom_error);
         }
     };
+    let prometheus = PrometheusMetrics::new("api", Some("/metrics"), None);
     HttpServer::new(move || {
         App::new()
+            .wrap(prometheus.clone())
             .wrap(TracingLogger)
             // Set a larger default json message size.
             .data(web::JsonConfig::default().limit(1024 * 1024 * 50))
             .data(database_pool.clone())
             .route("/", web::get().to(routes::home))
+            .route("/health", web::get().to(routes::health))
             .route("/project_add", web::post().to(routes::project_add))
             .route("/keyvalue_add", web::post().to(routes::keyvalue_add))
             .route("/environment_add", web::post().to(routes::environment_add))
