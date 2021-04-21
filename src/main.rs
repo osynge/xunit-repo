@@ -22,25 +22,80 @@ use diesel::r2d2::{self, ConnectionManager};
 use diesel::SqliteConnection;
 pub type DbConnection = SqliteConnection;
 pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
+use tracing::Level;
+use tracing_subscriber::FmtSubscriber;
+
+fn level_to_tracing_level(level: &Option<i8>) -> tracing::Level {
+    let default = Level::INFO;
+    match level {
+        Some(p) => {
+            if *p < -1 {
+                Level::ERROR
+            } else if *p == -1 {
+                Level::WARN
+            } else if *p == 0 {
+                Level::INFO
+            } else if *p == 1 {
+                Level::DEBUG
+            } else if *p >= 2 {
+                Level::TRACE
+            } else {
+                default
+            }
+        }
+        None => default,
+    }
+}
+
+fn log_level_to_env_filter(level: &Option<i8>) -> EnvFilter {
+    let default = EnvFilter::new("INFO");
+    match level {
+        Some(p) => {
+            if *p < -1 {
+                EnvFilter::new("ERROR")
+            } else if *p == -1 {
+                EnvFilter::new("WARN")
+            } else if *p == 0 {
+                EnvFilter::new("INFO")
+            } else if *p == 1 {
+                EnvFilter::new("DEBUG")
+            } else if *p >= 2 {
+                EnvFilter::new("TRACE")
+            } else {
+                default
+            }
+        }
+        None => default,
+    }
+}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let app_cfg = configuration::configure().unwrap();
-
-    LogTracer::init().expect("Unable to setup log tracer!");
+    let json_logging = true;
     let app_name = concat!(env!("CARGO_PKG_NAME"), "-", env!("CARGO_PKG_VERSION")).to_string();
     let (non_blocking_writer, _guard) = tracing_appender::non_blocking(std::io::stdout());
-    let bunyan_formatting_layer = BunyanFormattingLayer::new(app_name, non_blocking_writer);
-    let subscriber = Registry::default()
-        .with(EnvFilter::new("INFO"))
-        .with(JsonStorageLayer)
-        .with(bunyan_formatting_layer);
-    tracing::subscriber::set_global_default(subscriber).unwrap();
-    /*
-    How to use normal logging
-        let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
-        tracing_subscriber::fmt().with_writer(non_blocking).init()
-    */
+    LogTracer::init().expect("Unable to setup log tracer!");
+    match json_logging {
+        false => {
+            let subscriber = FmtSubscriber::builder()
+                // all spans/events with a level higher than TRACE (e.g, debug, info, warn, etc.)
+                // will be written to stdout.
+                .with_max_level(level_to_tracing_level(&app_cfg.log_level))
+                .with_writer(non_blocking_writer)
+                // completes the builder.
+                .finish();
+            tracing::subscriber::set_global_default(subscriber).unwrap();
+        }
+        true => {
+            let bunyan_formatting_layer = BunyanFormattingLayer::new(app_name, non_blocking_writer);
+            let subscriber = Registry::default()
+                .with(log_level_to_env_filter(&app_cfg.log_level))
+                .with(JsonStorageLayer)
+                .with(bunyan_formatting_layer);
+            tracing::subscriber::set_global_default(subscriber).unwrap();
+        }
+    }
     info!("{:?}", app_cfg);
     let database_url = match app_cfg.database_url {
         Some(url) => url,
