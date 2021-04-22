@@ -8,12 +8,23 @@ xunit-repo can be configured with environment variables, configuration files, or
 
 ## To do:
 
-* Add structured logging.
 * Documentation
     * Building the project.
     * configuration file.
     * command line argument.
     * environment variables.
+
+### Table of xunit-repo-client configuration.
+
+Setting | Type | Environment variable | Configuration parameter | Command line argument
+------- | ---- | -------------------- | ----------------------- | ---------------------
+Database URL | String | XR_DATABASE | database_url | --database-url
+Migrate database | Boolean | XR_DATABASE_MIGRATE | database_migrate | --database-migrate --no-database-migrate
+Host | String | XR_HOST | host | --host
+Port | Integer | XR_PORT | port | --port
+Configuration file | String | XR_CONFIG || --config
+Log level| Integer | XR_LOG_JSON | loglevel | -v --verbose -q --quiet
+Log in json | Boolean | XR_LOG_JSON | json_logs | --json-logging --line-logging
 
 ### Test commands:
 

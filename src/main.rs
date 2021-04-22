@@ -72,7 +72,11 @@ fn log_level_to_env_filter(level: &Option<i8>) -> EnvFilter {
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let app_cfg = configuration::configure().unwrap();
-    let json_logging = true;
+    // Set up logging
+    let json_logging = match app_cfg.log_in_json {
+        Some(log_in_json) => log_in_json,
+        None => false,
+    };
     let app_name = concat!(env!("CARGO_PKG_NAME"), "-", env!("CARGO_PKG_VERSION")).to_string();
     let (non_blocking_writer, _guard) = tracing_appender::non_blocking(std::io::stdout());
     LogTracer::init().expect("Unable to setup log tracer!");

@@ -7,6 +7,7 @@ pub(super) use toml;
 #[derive(Deserialize)]
 struct ConfigFile {
     log_level: Option<i8>,
+    json_logs: Option<bool>,
     database_url: Option<String>,
     database_migrate: Option<bool>,
     host: Option<String>,
@@ -18,6 +19,7 @@ impl Into<configuration::Config> for ConfigFile {
         configuration::Config {
             config_file: None,
             log_level: self.log_level,
+            log_in_json: self.json_logs,
             database_url: self.database_url,
             database_migrate: self.database_migrate,
             host: self.host,

@@ -59,6 +59,18 @@ pub(super) fn cli_clap() -> super::configuration::Config {
                 .takes_value(false),
         )
         .arg(
+            Arg::with_name("logging_json")
+                .long("json-logging")
+                .help("Log messages in json")
+                .takes_value(false),
+        )
+        .arg(
+            Arg::with_name("logging_line")
+                .long("line-logging")
+                .help("Log messages as lines")
+                .takes_value(false),
+        )
+        .arg(
             Arg::with_name("config")
                 .short("c")
                 .long("config")
@@ -103,6 +115,15 @@ pub(super) fn cli_clap() -> super::configuration::Config {
         (false, true) => Some(false),
         (false, false) => None,
     };
+    let log_in_json = match (
+        matches.is_present("logging_json"),
+        matches.is_present("logging_line"),
+    ) {
+        (true, true) => None,
+        (true, false) => Some(true),
+        (false, true) => Some(false),
+        (false, false) => None,
+    };
     let host = match matches.value_of("host") {
         Some(p) => Some(String::from(p)),
         None => None,
@@ -116,6 +137,7 @@ pub(super) fn cli_clap() -> super::configuration::Config {
     };
     crate::configuration::configuration::Config {
         config_file,
+        log_in_json,
         log_level,
         database_url,
         database_migrate,
