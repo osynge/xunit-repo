@@ -1,3 +1,5 @@
+use super::test_case;
+use crate::model::test_case_pass::TestCasePassNew;
 use crate::plumbing::environment::add_environment;
 use crate::plumbing::project::add_project;
 use crate::plumbing::run_identifier::add_run_identifier;
@@ -13,26 +15,24 @@ use crate::plumbing::test_run::add_test_run;
 use crate::plumbing::test_suite::add_test_suite;
 use crate::DbConnection;
 
-use super::test_case;
-
 pub fn get_upload(
     conn: &DbConnection,
     item: &xunit_repo_interface::Upload,
 ) -> Result<crate::model::project::Project, diesel::result::Error> {
-    info!("got:{:#?}", item);
+    debug!("got:{:#?}", item);
     let project = add_project(
         conn,
         item.project.sk.as_ref(),
         item.project.identifier.as_ref(),
         item.project.human_name.as_ref(),
     )?;
-    info!("project:{:#?}", project);
+    debug!("project:{:#?}", project);
     let env = add_environment(
         conn,
         item.environment.sk.as_ref(),
         Some(&item.environment.key_value),
     )?;
-    info!("env:{:#?}", env);
+    debug!("env:{:#?}", env);
     let run = add_run_identifier(
         conn,
         project.id,
@@ -40,10 +40,10 @@ pub fn get_upload(
         item.run.client_identifier.as_ref(),
         None,
     )?;
-    info!("run:{:#?}", run);
+    debug!("run:{:#?}", run);
     let tr = add_test_run(&conn, run.id, env.id)?;
-    info!("tr:{:#?}", tr);
-
+    debug!("tr:{:#?}", tr);
+    let mut test_case_pass = Vec::new();
     for file_item in item.files.iter() {
         let dir = &file_item.directory;
         let name = &file_item.filename;
@@ -92,14 +92,27 @@ pub fn get_upload(
                         )?;
                     }
                     (None, None, None) => {
+                        /*
                         add_test_case_pass(conn, test_file_run.id, test_case.id, &Some(tc.time))?;
+                        */
+
+                        test_case_pass.push(TestCasePassNew {
+                            fk_test_case: test_case.id,
+                            time: Some(tc.time),
+                            fk_test_file_run: test_file_run.id,
+                        })
                     }
                     _ => {
-                        info!("Cannot mix");
+                        error!("Cannot mix");
                     }
                 }
             }
         }
     }
+    debug!("test_case_pass={:#?}", test_case_pass);
+    match crate::plumbing::test_case_pass::add_test_case_pass_list(conn, &test_case_pass) {
+        Ok(p) => info!("added test passes count={:#?}", p),
+        Err(p) => error!("added_pass={:#?}", p),
+    };
     Ok(project)
 }

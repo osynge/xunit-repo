@@ -105,8 +105,8 @@ fn insert_environment(
     match insert {
         Ok(env) => {
             for (key, value) in keyvalue.into_iter() {
-                println!("key:{:#?}", key);
-                println!("value:{:#?}", value);
+                debug!("key:{:#?}", key);
+                debug!("value:{:#?}", value);
                 let added_kv = match add_keyvalue(conn, key, value) {
                     Ok(p) => p.id,
                     Err(p) => {

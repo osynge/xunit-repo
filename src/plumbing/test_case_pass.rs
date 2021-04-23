@@ -35,3 +35,13 @@ pub fn add_test_case_pass(
         }
     }
 }
+
+pub fn add_test_case_pass_list(
+    conn: &DbConnection,
+    pass: &Vec<TestCasePassNew>,
+) -> Result<usize, diesel::result::Error> {
+    use crate::schema::test_case_pass::dsl::*;
+    diesel::insert_or_ignore_into(test_case_pass)
+        .values(pass)
+        .execute(conn)
+}
