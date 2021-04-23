@@ -4,7 +4,6 @@ WORKDIR /app
 ADD --chown=rust:rust . /app/xunit_repo
 WORKDIR /app/xunit_repo
 RUN pwd
-RUN ls -al . target
 RUN rm -rf xunit_repo/target
 RUN ls -al
 RUN cargo build --release --features=libsqlite3-sys
