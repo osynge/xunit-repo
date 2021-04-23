@@ -3,11 +3,8 @@ FROM ekidd/rust-musl-builder:stable as builder
 WORKDIR /app
 ADD --chown=rust:rust . /app/xunit_repo
 WORKDIR /app/xunit_repo
-RUN pwd
-RUN rm -rf xunit_repo/target
-RUN ls -al
+RUN rm -rf target Cargo.lock
 RUN cargo build --release --features=libsqlite3-sys
-RUN ls /app/xunit_repo/target/x86_64-unknown-linux-musl/release/xunit_repo
 
 FROM alpine:latest
 
