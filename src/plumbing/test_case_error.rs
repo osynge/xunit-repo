@@ -50,3 +50,13 @@ pub fn add_test_case_error(
         }
     }
 }
+
+pub fn add_test_case_error_list(
+    conn: &DbConnection,
+    errors: &Vec<TestCaseErrorNew>,
+) -> Result<usize, diesel::result::Error> {
+    use crate::schema::test_case_error::dsl::*;
+    diesel::insert_or_ignore_into(test_case_error)
+        .values(errors)
+        .execute(conn)
+}

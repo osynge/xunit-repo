@@ -38,3 +38,13 @@ pub fn add_test_case_skipped(
         }
     }
 }
+
+pub fn add_test_case_skip_list(
+    conn: &DbConnection,
+    skips: &Vec<TestCaseSkippedNew>,
+) -> Result<usize, diesel::result::Error> {
+    use crate::schema::test_case_skipped::dsl::*;
+    diesel::insert_or_ignore_into(test_case_skipped)
+        .values(skips)
+        .execute(conn)
+}
