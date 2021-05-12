@@ -7,6 +7,7 @@ pub(crate) struct Config {
     pub(crate) database_migrate: Option<bool>,
     pub(crate) host: Option<String>,
     pub(crate) port: Option<u32>,
+    pub(crate) viewer_url: Option<String>,
 }
 
 impl Config {
@@ -20,6 +21,7 @@ impl Config {
             database_migrate: None,
             host: None,
             port: None,
+            viewer_url: None,
         }
     }
     pub(super) fn copy_with_default(&self, src: &Config) -> Config {
@@ -47,6 +49,14 @@ impl Config {
             None => None,
         };
         let port = self.port.or_else(|| src.port);
+        let viewer = match self
+            .viewer_url
+            .as_ref()
+            .or_else(|| src.config_file.as_ref())
+        {
+            Some(p) => Some(p.clone()),
+            None => None,
+        };
         Config {
             config_file,
             log_in_json,
@@ -55,6 +65,7 @@ impl Config {
             database_migrate,
             host,
             port,
+            viewer_url: viewer,
         }
     }
 }
@@ -71,6 +82,7 @@ mod tests {
             database_migrate: Some(true),
             host: Some(String::from("host")),
             port: Some(8080),
+            viewer_url: Some(String::from("https://192.168.0.10:9999")),
         }
     }
     fn gen_config_with_data_2() -> Config {
@@ -82,6 +94,7 @@ mod tests {
             database_migrate: Some(false),
             host: Some(String::from("2")),
             port: Some(2),
+            viewer_url: Some(String::from("https://192.168.0.10:9998")),
         }
     }
 

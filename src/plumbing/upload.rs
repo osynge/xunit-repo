@@ -19,9 +19,11 @@ use crate::DbConnection;
 
 pub fn get_upload(
     conn: &DbConnection,
+    config: &crate::SharedConfig,
     item: &xunit_repo_interface::Upload,
 ) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
     debug!("got:{:#?}", item);
+    info!("config:{:#?}", config);
     let project = add_project(
         conn,
         item.project.sk.as_ref(),
@@ -45,11 +47,16 @@ pub fn get_upload(
     debug!("run:{:#?}", run);
     let tr = add_test_run(&conn, run.id, env.id)?;
     debug!("tr:{:#?}", tr);
+    let viewer_base_url = match &config.baseurl {
+        Some(p) => Some(p.clone()),
+        None => None,
+    };
     let output = xunit_repo_interface::UploadResponse {
         project: project.sk,
         run_identifier: run.sk,
         environment: env.sk,
         test_run: tr.sk,
+        viewer_url: viewer_base_url,
     };
     let mut list_test_case_pass = Vec::new();
     let mut list_test_case_fail = Vec::new();

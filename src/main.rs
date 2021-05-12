@@ -25,6 +25,11 @@ pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
+#[derive(Clone, Debug)]
+pub struct SharedConfig {
+    pub baseurl: Option<String>,
+}
+
 fn level_to_tracing_level(level: &Option<i8>) -> tracing::Level {
     let default = Level::INFO;
     match level {
@@ -138,9 +143,15 @@ async fn main() -> std::io::Result<()> {
             return Err(custom_error);
         }
     };
+
     let prometheus = PrometheusMetrics::new("api", Some("/metrics"), None);
+
+    let shared_config = SharedConfig {
+        baseurl: app_cfg.viewer_url,
+    };
     HttpServer::new(move || {
         App::new()
+            .data(shared_config.clone())
             .wrap(prometheus.clone())
             .wrap(TracingLogger)
             // Set a larger default json message size.

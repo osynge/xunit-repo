@@ -12,6 +12,7 @@ struct ConfigFile {
     database_migrate: Option<bool>,
     host: Option<String>,
     port: Option<u32>,
+    viewer_url: Option<String>,
 }
 
 impl Into<configuration::Config> for ConfigFile {
@@ -24,6 +25,7 @@ impl Into<configuration::Config> for ConfigFile {
             database_migrate: self.database_migrate,
             host: self.host,
             port: self.port,
+            viewer_url: self.viewer_url,
         }
     }
 }

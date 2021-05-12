@@ -32,6 +32,7 @@ pub(super) fn cli_env() -> super::configuration::Config {
         ),
         Err(_) => None,
     };
+    let viewer_url = env::var("XR_VIEWER_URL").ok();
     super::configuration::Config {
         log_level,
         log_in_json,
@@ -40,5 +41,6 @@ pub(super) fn cli_env() -> super::configuration::Config {
         database_migrate,
         host,
         port,
+        viewer_url,
     }
 }

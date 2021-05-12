@@ -91,6 +91,13 @@ pub(super) fn cli_clap() -> super::configuration::Config {
                 .value_name("PORT")
                 .help("Sets the host's port.")
                 .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("viewer_url")
+                .long("viewer-url")
+                .value_name("VIEWER")
+                .help("Sets the base url to view web pages.")
+                .takes_value(true),
         );
 
     let matches = application.get_matches();
@@ -135,6 +142,10 @@ pub(super) fn cli_clap() -> super::configuration::Config {
         },
         None => None,
     };
+    let viewer_url = match matches.value_of("viewer_url") {
+        Some(p) => Some(String::from(p)),
+        None => None,
+    };
     crate::configuration::configuration::Config {
         config_file,
         log_in_json,
@@ -143,5 +154,6 @@ pub(super) fn cli_clap() -> super::configuration::Config {
         database_migrate,
         host,
         port,
+        viewer_url,
     }
 }

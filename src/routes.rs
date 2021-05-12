@@ -185,14 +185,18 @@ pub async fn test_case_pass_add(
 
 pub async fn upload(
     pool: web::Data<Pool>,
+    shared_config: web::Data<crate::SharedConfig>,
     item: web::Json<xunit_repo_interface::Upload>,
 ) -> Result<HttpResponse, Error> {
     let conn = pool.get().unwrap();
+    let config = shared_config.into_inner();
     let run_identifier = item.into_inner();
-    Ok(web::block(move || get_upload(&conn, &run_identifier))
-        .await
-        .map(|project| HttpResponse::Created().json(project))
-        .map_err(|_| HttpResponse::InternalServerError())?)
+    Ok(
+        web::block(move || get_upload(&conn, config.as_ref(), &run_identifier))
+            .await
+            .map(|project| HttpResponse::Created().json(project))
+            .map_err(|_| HttpResponse::InternalServerError())?,
+    )
 }
 
 #[cfg(test)]

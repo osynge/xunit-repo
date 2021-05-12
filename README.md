@@ -25,6 +25,7 @@ Port | Integer | XR_PORT | port | --port
 Configuration file | String | XR_CONFIG || --config
 Log level| Integer | XR_LOG_JSON | loglevel | -v --verbose -q --quiet
 Log in json | Boolean | XR_LOG_JSON | json_logs | --json-logging --line-logging
+Viewer URL| String | XR_VIEWER_URL | viewer_url | --viewer-url
 
 ### Test commands:
 
