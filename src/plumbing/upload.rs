@@ -17,13 +17,58 @@ use crate::plumbing::test_run::add_test_run;
 use crate::plumbing::test_suite::add_test_suite;
 use crate::DbConnection;
 
+pub fn upload_short(
+    conn: &DbConnection,
+    config: &crate::SharedConfig,
+    item: &xunit_repo_interface::Upload,
+) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
+    debug!("got:{:#?}", item);
+    debug!("config:{:#?}", config);
+    let project = add_project(
+        conn,
+        item.project.sk.as_ref(),
+        item.project.identifier.as_ref(),
+        item.project.human_name.as_ref(),
+    )?;
+    debug!("project:{:#?}", project);
+    let env = add_environment(
+        conn,
+        item.environment.sk.as_ref(),
+        Some(&item.environment.key_value),
+    )?;
+    debug!("env:{:#?}", env);
+    let run = add_run_identifier(
+        conn,
+        project.id,
+        item.run.sk.as_ref(),
+        item.run.client_identifier.as_ref(),
+        None,
+    )?;
+    debug!("run:{:#?}", run);
+    let tr = add_test_run(&conn, run.id, env.id)?;
+    debug!("tr:{:#?}", tr);
+    let viewer_base_url = match &config.baseurl {
+        Some(p) => Some(p.clone()),
+        None => None,
+    };
+    let output = xunit_repo_interface::UploadResponse {
+        project: project.sk,
+        run_identifier: run.sk,
+        environment: env.sk,
+        test_run: tr.sk,
+        viewer_url: viewer_base_url,
+    };
+    info!("output:{:#?}", output);
+    Ok(output)
+}
+
 pub fn get_upload(
     conn: &DbConnection,
     config: &crate::SharedConfig,
     item: &xunit_repo_interface::Upload,
 ) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
     debug!("got:{:#?}", item);
-    info!("config:{:#?}", config);
+    debug!("config:{:#?}", config);
     let project = add_project(
         conn,
         item.project.sk.as_ref(),

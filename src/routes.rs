@@ -19,6 +19,8 @@ use crate::Pool;
 use actix_web::http::StatusCode;
 use actix_web::{web, Error, HttpResponse};
 use anyhow::Result;
+use futures::future::FutureExt;
+use std::sync::Arc;
 
 pub async fn health() -> HttpResponse {
     HttpResponse::Ok().finish()
@@ -183,20 +185,57 @@ pub async fn test_case_pass_add(
     )
 }
 
+async fn upload_long<'a>(
+    pool: web::Data<Pool>,
+    shared_config: web::Data<crate::SharedConfig>,
+    upload: Arc<xunit_repo_interface::Upload>,
+) -> Result<HttpResponse, Error> {
+    let conn = pool.get().unwrap();
+    let config = shared_config.into_inner();
+    Ok(
+        web::block(move || get_upload(&conn, config.as_ref(), &upload))
+            .await
+            .map(|project| HttpResponse::Created().json(project))
+            .map_err(|_| HttpResponse::InternalServerError())?,
+    )
+}
+
+async fn upload_short(
+    pool: web::Data<Pool>,
+    shared_config: web::Data<crate::SharedConfig>,
+    upload: Arc<xunit_repo_interface::Upload>,
+) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
+    let conn = pool.get().unwrap();
+    let config = shared_config.into_inner();
+    crate::plumbing::upload::upload_short(&conn, config.as_ref(), &upload)
+}
+
 pub async fn upload(
     pool: web::Data<Pool>,
     shared_config: web::Data<crate::SharedConfig>,
     item: web::Json<xunit_repo_interface::Upload>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
-    let config = shared_config.into_inner();
-    let run_identifier = item.into_inner();
-    Ok(
-        web::block(move || get_upload(&conn, config.as_ref(), &run_identifier))
-            .await
-            .map(|project| HttpResponse::Created().json(project))
-            .map_err(|_| HttpResponse::InternalServerError())?,
-    )
+    let upload_arc_1 = Arc::new(item.into_inner());
+    let upload_arc_2 = upload_arc_1.clone();
+    let upload_short_result = upload_short(pool.clone(), shared_config.clone(), upload_arc_1).await;
+    return match upload_short_result {
+        Ok(upload_summary) => {
+            let now_future = upload_long(pool, shared_config, upload_arc_2);
+            actix_rt::spawn(now_future.map(|long_res| match long_res {
+                Ok(_) => {
+                    info!("upload_long finished.");
+                }
+                Err(long_err) => {
+                    error!("upload_long failed:{:#?}", long_err);
+                }
+            }));
+            Ok(HttpResponse::Created().json(upload_summary))
+        }
+        Err(upload_short_err) => {
+            error!("upload_short failed:{:#?}", upload_short_err);
+            Err(HttpResponse::InternalServerError())?
+        }
+    };
 }
 
 #[cfg(test)]
