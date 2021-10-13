@@ -19,9 +19,8 @@ mod plumbing;
 mod routes;
 use actix_web::{web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
-use diesel::SqliteConnection;
-pub type DbConnection = SqliteConnection;
-pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
+pub type DbConnection = xunit_repo_db::DbConnection;
+pub type Pool = xunit_repo_db::Pool;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
