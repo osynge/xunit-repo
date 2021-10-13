@@ -67,7 +67,7 @@ fn environment_insert_hash_keyvalue(
     insert_hash_keyvalue: &String,
 ) -> Result<Environment, diesel::result::Error> {
     use crate::schema::environment::dsl::*;
-    let insert_sk = Uuid::new_v4().to_string();
+    let insert_sk = Uuid::new_v4().to_simple().to_string();
     let new_link = EnvironmentNew {
         sk: &insert_sk,
         hash_keyvalue: &insert_hash_keyvalue,
@@ -143,7 +143,7 @@ pub fn add_environment(
         }
 
         (None, Some(kv)) => {
-            let sk = Uuid::new_v4().to_string();
+            let sk = Uuid::new_v4().to_simple().to_string();
 
             let keyvalue_hash = keyvalue_hash_gen(kv);
             match environment_get_by_hash_keyvalue(conn, &keyvalue_hash) {

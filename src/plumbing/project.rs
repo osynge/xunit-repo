@@ -110,7 +110,7 @@ fn project_insert_identifier_humanname(
     insert_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
-    let insert_sk = Uuid::new_v4().to_string();
+    let insert_sk = Uuid::new_v4().to_simple().to_string();
     let new_link = ProjectNew {
         sk: &insert_sk,
         identifier: &insert_identifier,
@@ -169,7 +169,7 @@ fn project_insert_humanname(
     insert_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
-    let insert_sk = Uuid::new_v4().to_string();
+    let insert_sk = Uuid::new_v4().to_simple().to_string();
     let new_link = ProjectNew {
         sk: &insert_sk,
         identifier: &insert_human_name,
@@ -188,7 +188,7 @@ fn project_insert_identifier(
     insert_identifier: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
-    let insert_sk = Uuid::new_v4().to_string();
+    let insert_sk = Uuid::new_v4().to_simple().to_string();
     let new_link = ProjectNew {
         sk: &insert_sk,
         identifier: &insert_identifier,

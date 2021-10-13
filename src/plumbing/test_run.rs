@@ -19,7 +19,7 @@ pub fn add_test_run(
     {
         Ok(p) => return Ok(p),
         Err(_) => {
-            let new_sk = Uuid::new_v4().to_string();
+            let new_sk = Uuid::new_v4().to_simple().to_string();
             let new_created = Utc::now().timestamp();
 
             let new_test_run_new = TestRunNew {

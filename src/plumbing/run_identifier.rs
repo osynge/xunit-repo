@@ -95,7 +95,7 @@ pub fn add_run_identifier(
         }
         (None, Some(client_identifier)) => {
             debug!("run:client_identifier:{:#?}", client_identifier);
-            let sk = Uuid::new_v4().to_string();
+            let sk = Uuid::new_v4().to_simple().to_string();
 
             match run_identifier_get_by_client_identifier(conn, fk_project, &client_identifier) {
                 Ok(p) => Ok(p),
