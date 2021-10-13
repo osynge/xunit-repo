@@ -41,7 +41,9 @@ pub fn add_test_case_pass_list(
     pass: &Vec<TestCasePassNew>,
 ) -> Result<usize, diesel::result::Error> {
     use crate::schema::test_case_pass::dsl::*;
-    diesel::insert_or_ignore_into(test_case_pass)
+    diesel::insert_into(test_case_pass)
         .values(pass)
+        .on_conflict((fk_test_case, fk_test_file_run))
+        .do_nothing()
         .execute(conn)
 }

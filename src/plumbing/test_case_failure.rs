@@ -56,7 +56,9 @@ pub fn add_test_case_failure_list(
     fails: &Vec<TestCaseFailureNew>,
 ) -> Result<usize, diesel::result::Error> {
     use crate::schema::test_case_failure::dsl::*;
-    diesel::insert_or_ignore_into(test_case_failure)
+    diesel::insert_into(test_case_failure)
         .values(fails)
+        .on_conflict((fk_test_case, fk_test_file_run))
+        .do_nothing()
         .execute(conn)
 }
