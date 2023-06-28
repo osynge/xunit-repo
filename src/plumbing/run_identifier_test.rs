@@ -1,10 +1,9 @@
-use crate::db;
 use crate::plumbing::project;
 use crate::plumbing::run_identifier;
 
 #[test]
 fn add_run_identifier() {
-    let conn = db::establish_connection_pool(&"sqlite://memory", true)
+    let mut conn = xunit_repo_db::establish_connection_pool(&"sqlite://memory", true)
         .unwrap()
         .get()
         .unwrap();
@@ -12,7 +11,7 @@ fn add_run_identifier() {
     let project_identifier = Some(String::from(""));
     let project_humanname = Some(String::from(""));
     let add_project = project::add_project(
-        &conn,
+        &mut conn,
         project_sk.as_ref(),
         project_identifier.as_ref(),
         project_humanname.as_ref(),
@@ -23,7 +22,7 @@ fn add_run_identifier() {
     let run_created = None;
 
     let add_1 = run_identifier::add_run_identifier(
-        &conn,
+        &mut conn,
         add_project.id,
         run_sk.as_ref(),
         run_client_identifier.as_ref(),
@@ -31,7 +30,7 @@ fn add_run_identifier() {
     )
     .unwrap();
     let add_2 = run_identifier::add_run_identifier(
-        &conn,
+        &mut conn,
         add_project.id,
         run_sk.as_ref(),
         run_client_identifier.as_ref(),

@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_suite(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_name: &String,
 ) -> Result<TestSuite, diesel::result::Error> {
     use crate::schema::test_suite::dsl::*;

@@ -7,7 +7,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 pub fn add_test_run(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_fk_run_identifier: i32,
     new_fk_environment: i32,
 ) -> Result<TestRun, diesel::result::Error> {

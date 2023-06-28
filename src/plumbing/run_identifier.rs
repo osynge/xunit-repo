@@ -7,7 +7,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 fn run_identifier_get_by_sk_client_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_project: i32,
     filter_sk: &String,
     filter_client_identifier: &String,
@@ -21,7 +21,7 @@ fn run_identifier_get_by_sk_client_identifier(
 }
 
 fn run_identifier_get_by_client_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_project: i32,
     filter_client_identifier: &String,
 ) -> Result<RunIdentifier, diesel::result::Error> {
@@ -33,7 +33,7 @@ fn run_identifier_get_by_client_identifier(
 }
 
 fn run_identifier_get_by_sk(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_project: i32,
     filter_sk: &String,
 ) -> Result<RunIdentifier, diesel::result::Error> {
@@ -45,7 +45,7 @@ fn run_identifier_get_by_sk(
 }
 
 fn insert_run_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_fk_project: i32,
     insert_created: i64,
     insert_sk: &String,
@@ -67,7 +67,7 @@ fn insert_run_identifier(
 }
 
 pub fn add_run_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     fk_project: i32,
     run_sk: Option<&String>,
     run_client_identifier: Option<&String>,

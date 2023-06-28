@@ -6,7 +6,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 pub fn add_test_case(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_name: &String,
     new_fk_test_class: i32,
     new_fk_test_suite: i32,

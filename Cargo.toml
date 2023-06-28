@@ -10,7 +10,7 @@ license = "MIT OR Apache-2.0"
 futures = "0.3.4"
 actix-web = "3"
 actix-rt = "1.1.1"
-diesel = { version = "1.4.5", features = ["sqlite", "r2d2"]}
+diesel = { version = "2.1.0", features = ["postgres", "r2d2"]}
 dotenv = "0.15.0"
 serde = "1.0"
 serde_derive = "1.0"
@@ -20,8 +20,8 @@ chrono = "0.4.15"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 xunit-repo-interface = { git = "https://github.com/osynge/xunit-repo-interface.git", branch = "main" }
 #xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
-xunit_repo_db = { path = "../xunit-repo-db", features = ["postgres"] }
-diesel_migrations = "1.4.0"
+xunit_repo_db = { path = "../xunit-repo-db" }
+diesel_migrations = "2.1.0"
 clap = "2"
 log = "*"
 thiserror = "*"

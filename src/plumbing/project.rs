@@ -6,7 +6,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 fn project_get_by_sk_identifier_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
     filter_identifier: &String,
     filter_human_name: &String,
@@ -20,7 +20,7 @@ fn project_get_by_sk_identifier_humanname(
 }
 
 fn project_get_by_identifier_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_identifier: &String,
     filter_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -32,7 +32,7 @@ fn project_get_by_identifier_humanname(
 }
 
 fn project_get_by_sk_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
     filter_identifier: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -44,7 +44,7 @@ fn project_get_by_sk_identifier(
 }
 
 fn project_get_by_sk_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
     filter_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -56,7 +56,7 @@ fn project_get_by_sk_humanname(
 }
 
 fn project_get_by_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
@@ -66,7 +66,7 @@ fn project_get_by_humanname(
 }
 
 fn project_get_by_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_identifier: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
@@ -76,7 +76,7 @@ fn project_get_by_identifier(
 }
 
 fn project_get_by_sk(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
@@ -84,7 +84,7 @@ fn project_get_by_sk(
 }
 
 fn project_insert_sk_identifier_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_sk: &String,
     insert_identifier: &String,
     insert_human_name: &String,
@@ -105,7 +105,7 @@ fn project_insert_sk_identifier_humanname(
 }
 
 fn project_insert_identifier_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_identifier: &String,
     insert_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -125,7 +125,7 @@ fn project_insert_identifier_humanname(
 }
 
 fn project_insert_sk_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_sk: &String,
     insert_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -144,7 +144,7 @@ fn project_insert_sk_humanname(
 }
 
 fn project_insert_sk_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_sk: &String,
     insert_identifier: &String,
 ) -> Result<Project, diesel::result::Error> {
@@ -165,7 +165,7 @@ fn project_insert_sk_identifier(
 }
 
 fn project_insert_humanname(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_human_name: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
@@ -184,7 +184,7 @@ fn project_insert_humanname(
 }
 
 fn project_insert_identifier(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_identifier: &String,
 ) -> Result<Project, diesel::result::Error> {
     use crate::schema::project::dsl::*;
@@ -204,7 +204,7 @@ fn project_insert_identifier(
 }
 
 pub fn add_project(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     sk: Option<&String>,
     identifier: Option<&String>,
     human_name: Option<&String>,

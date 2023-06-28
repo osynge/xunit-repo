@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_case_skipped(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_test_file_run: i32,
     new_fk_test_case: i32,
     new_time: &Option<f32>,
@@ -40,7 +40,7 @@ pub fn add_test_case_skipped(
 }
 
 pub fn add_test_case_skip_list(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     skips: &Vec<TestCaseSkippedNew>,
 ) -> Result<usize, diesel::result::Error> {
     use crate::schema::test_case_skipped::dsl::*;
