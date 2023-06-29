@@ -19,8 +19,8 @@ anyhow = "1.0"
 chrono = "0.4.15"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 xunit-repo-interface = { git = "https://github.com/osynge/xunit-repo-interface.git", branch = "main" }
-#xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
-xunit_repo_db = { path = "../xunit-repo-db" }
+xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
+#xunit_repo_db = { path = "../xunit-repo-db" }
 diesel_migrations = "2.1.0"
 clap = "2"
 log = "*"
