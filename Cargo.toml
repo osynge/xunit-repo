@@ -30,7 +30,7 @@ dirs = "*"
 actix-files = "0.3"
 # only for static compilation for minimal docker builds
 libsqlite3-sys = { version = "*", features = ["bundled"], optional=true}
-tracing = "0.1.29"
+tracing = "0.1.37"
 tracing-futures = "0.2.5"
 tracing-subscriber = "0.2.25"
 tracing-actix-web = "0.2.1"
