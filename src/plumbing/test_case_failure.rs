@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_case_failure(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_test_file_run: i32,
     new_fk_test_case: i32,
     new_time: &Option<f32>,
@@ -52,11 +52,13 @@ pub fn add_test_case_failure(
 }
 
 pub fn add_test_case_failure_list(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     fails: &Vec<TestCaseFailureNew>,
 ) -> Result<usize, diesel::result::Error> {
     use crate::schema::test_case_failure::dsl::*;
-    diesel::insert_or_ignore_into(test_case_failure)
+    diesel::insert_into(test_case_failure)
         .values(fails)
+        .on_conflict((fk_test_case, fk_test_file_run))
+        .do_nothing()
         .execute(conn)
 }

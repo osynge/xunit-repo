@@ -1,13 +1,11 @@
 use crate::model::test_suite::{TestSuite, TestSuiteNew};
 use crate::DbConnection;
-use chrono::Utc;
 use diesel::dsl::insert_into;
 use diesel::prelude::*;
 use diesel::RunQueryDsl;
-use uuid::Uuid;
 
 pub fn add_test_suite(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_name: &String,
 ) -> Result<TestSuite, diesel::result::Error> {
     use crate::schema::test_suite::dsl::*;

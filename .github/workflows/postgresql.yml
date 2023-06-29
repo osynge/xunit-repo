@@ -1,0 +1,41 @@
+name: PostgreSQL
+on: push
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Query database
+        run: sudo psql "postgresql://postgres_user:postgres_password@localhost:${{ job.services.postgres.ports[5432] }}/postgres_db" --command 'SELECT 1;'
+        env:
+          PGPASSWORD: postgres_password
+      - uses: actions/checkout@v3
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
+        env:
+          TEST_DB_PASSWORD: postgres_password
+          TEST_DB_USERNAME: postgres_user
+          TEST_DB_HOSTNAME: localhost
+          TEST_DB_DATABASE: postgres_db
+          RUST_TEST_THREADS: 1
+          TEST_DB_PORT: ${{ job.services.postgres.ports[5432] }}

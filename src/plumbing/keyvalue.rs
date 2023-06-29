@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_key: &String,
     new_value: &String,
 ) -> Result<KeyValue, diesel::result::Error> {

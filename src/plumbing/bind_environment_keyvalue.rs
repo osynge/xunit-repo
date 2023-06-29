@@ -7,7 +7,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_bind_environment_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     item: &BindEnvironmentKeyvalueJson,
 ) -> Result<BindEnvironmentKeyvalue, diesel::result::Error> {
     use crate::schema::bind_environment_keyvalue::dsl::*;

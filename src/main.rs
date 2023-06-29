@@ -1,30 +1,26 @@
-#[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate diesel_migrations;
 #[macro_use]
 extern crate log;
-use actix_files::Files;
 use actix_web_prom::PrometheusMetrics;
 use tracing_actix_web::TracingLogger;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{EnvFilter, Registry};
-use xunit_repo_db::db;
+use xunit_repo_db;
 use xunit_repo_db::model;
 use xunit_repo_db::schema;
 mod configuration;
 mod plumbing;
 mod routes;
 use actix_web::{web, App, HttpServer};
-use diesel::r2d2::{self, ConnectionManager};
-use diesel::SqliteConnection;
-pub type DbConnection = SqliteConnection;
-pub type Pool = r2d2::Pool<ConnectionManager<DbConnection>>;
+pub type DbConnection = xunit_repo_db::DbConnection;
+pub type Pool = xunit_repo_db::Pool;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
-
+#[cfg(test)]
+mod test;
 #[derive(Clone, Debug)]
 pub struct SharedConfig {
     pub baseurl: Option<String>,
@@ -136,7 +132,7 @@ async fn main() -> std::io::Result<()> {
         None => false,
     };
 
-    let database_pool = match db::establish_connection_pool(&database_url, migrate) {
+    let database_pool = match xunit_repo_db::establish_connection_pool(&database_url, migrate) {
         Ok(pool) => pool,
         Err(err) => {
             let custom_error = std::io::Error::new(std::io::ErrorKind::Other, err);

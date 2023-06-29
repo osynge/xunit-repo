@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_case_class(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_name: &String,
 ) -> Result<TestCaseClass, diesel::result::Error> {
     use crate::schema::test_case_class::dsl::*;

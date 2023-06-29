@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_file(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_directory: &String,
     new_file_name: &String,
 ) -> Result<TestFile, diesel::result::Error> {

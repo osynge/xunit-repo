@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, PartialEq)]
+use converge::Converge;
+
+#[derive(Debug, Clone, PartialEq, Converge)]
 pub(crate) struct Config {
     pub(crate) config_file: Option<String>,
     pub(crate) log_in_json: Option<bool>,
@@ -22,50 +24,6 @@ impl Config {
             host: None,
             port: None,
             viewer_url: None,
-        }
-    }
-    pub(super) fn copy_with_default(&self, src: &Config) -> Config {
-        let config_file = match self
-            .config_file
-            .as_ref()
-            .or_else(|| src.config_file.as_ref())
-        {
-            Some(p) => Some(p.clone()),
-            None => None,
-        };
-        let log_in_json = self.log_in_json.or_else(|| src.log_in_json);
-        let log_level = self.log_level.or_else(|| src.log_level);
-        let database_url = match self
-            .database_url
-            .as_ref()
-            .or_else(|| src.database_url.as_ref())
-        {
-            Some(p) => Some(p.clone()),
-            None => None,
-        };
-        let database_migrate = self.database_migrate.or_else(|| src.database_migrate);
-        let host = match self.host.as_ref().or_else(|| src.host.as_ref()) {
-            Some(p) => Some(p.clone()),
-            None => None,
-        };
-        let port = self.port.or_else(|| src.port);
-        let viewer = match self
-            .viewer_url
-            .as_ref()
-            .or_else(|| src.config_file.as_ref())
-        {
-            Some(p) => Some(p.clone()),
-            None => None,
-        };
-        Config {
-            config_file,
-            log_in_json,
-            log_level,
-            database_url,
-            database_migrate,
-            host,
-            port,
-            viewer_url: viewer,
         }
     }
 }
@@ -102,7 +60,7 @@ mod tests {
     fn gets_default_with_none() {
         let a = gen_config_with_data_1();
         let b = Config::new();
-        let c = b.copy_with_default(&a);
+        let c = b.converge(a.clone());
         assert_eq!(c, a);
     }
 
@@ -110,7 +68,7 @@ mod tests {
     fn gets_none_with_none() {
         let a = Config::new();
         let b = Config::new();
-        let c = b.copy_with_default(&a);
+        let c = b.converge(a.clone());
         assert_eq!(c, a);
     }
 
@@ -118,7 +76,7 @@ mod tests {
     fn gets_original_with_none() {
         let a = gen_config_with_data_1();
         let b = Config::new();
-        let c = a.copy_with_default(&b);
+        let c = a.clone().converge(b.clone());
         assert_eq!(c, a);
     }
 
@@ -126,7 +84,7 @@ mod tests {
     fn gets_original_with_some() {
         let a = gen_config_with_data_1();
         let b = gen_config_with_data_2();
-        let c = a.copy_with_default(&b);
+        let c = a.clone().converge(b.clone());
         assert_eq!(c, a);
     }
 }

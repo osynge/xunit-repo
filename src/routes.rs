@@ -36,11 +36,11 @@ pub async fn project_add(
     pool: web::Data<Pool>,
     item: web::Json<ProjectJson>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let project = item.into_inner();
     Ok(web::block(move || {
         add_project(
-            &conn,
+            &mut conn,
             project.sk.as_ref(),
             project.identifier.as_ref(),
             project.human_name.as_ref(),
@@ -55,10 +55,10 @@ pub async fn keyvalue_add(
     pool: web::Data<Pool>,
     item: web::Json<KeyValueJson>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let keyvalue = item.into_inner();
     Ok(
-        web::block(move || add_keyvalue(&conn, &keyvalue.key, &keyvalue.value))
+        web::block(move || add_keyvalue(&mut conn, &keyvalue.key, &keyvalue.value))
             .await
             .map(|project| HttpResponse::Created().json(project))
             .map_err(|_| HttpResponse::InternalServerError())?,
@@ -70,10 +70,10 @@ pub async fn environment_add(
     item: web::Json<EnvironmentJson>,
 ) -> Result<HttpResponse, Error> {
     let environment = item.into_inner();
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     Ok(web::block(move || {
         add_environment(
-            &conn,
+            &mut conn,
             environment.sk.as_ref(),
             environment.key_value.as_ref(),
         )
@@ -88,10 +88,10 @@ pub async fn run_add(
     item: web::Json<RunIdentifierJson>,
 ) -> Result<HttpResponse, Error> {
     let run_identifier = item.into_inner();
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     Ok(web::block(move || {
         add_run_identifier(
-            &conn,
+            &mut conn,
             1,
             run_identifier.sk.as_ref(),
             run_identifier.client_identifier.as_ref(),
@@ -107,11 +107,11 @@ pub async fn test_case_error_add(
     pool: web::Data<Pool>,
     item: web::Json<TestCaseErrorJson>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let test_case_error = item.into_inner();
     Ok(web::block(move || {
         add_test_case_error(
-            &conn,
+            &mut conn,
             1,
             1,
             &test_case_error.time,
@@ -131,11 +131,11 @@ pub async fn test_case_failure_add(
     pool: web::Data<Pool>,
     item: web::Json<TestCaseFailureJson>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let run_identifier = item.into_inner();
     Ok(web::block(move || {
         add_test_case_failure(
-            &conn,
+            &mut conn,
             1,
             1,
             &run_identifier.time,
@@ -155,11 +155,11 @@ pub async fn test_case_skipped_add(
     pool: web::Data<Pool>,
     item: web::Json<TestCaseSkippedJson>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let run_identifier = item.into_inner();
     Ok(web::block(move || {
         add_test_case_skipped(
-            &conn,
+            &mut conn,
             1,
             1,
             &run_identifier.time,
@@ -176,9 +176,9 @@ pub async fn test_case_pass_add(
     item: web::Json<TestCasePassJson>,
 ) -> Result<HttpResponse, Error> {
     let run_identifier = item.into_inner();
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     Ok(
-        web::block(move || add_test_case_pass(&conn, 1, 1, &run_identifier.time))
+        web::block(move || add_test_case_pass(&mut conn, 1, 1, &run_identifier.time))
             .await
             .map(|project| HttpResponse::Created().json(project))
             .map_err(|_| HttpResponse::InternalServerError())?,
@@ -190,10 +190,10 @@ async fn upload_long<'a>(
     shared_config: web::Data<crate::SharedConfig>,
     upload: Arc<xunit_repo_interface::Upload>,
 ) -> Result<HttpResponse, Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let config = shared_config.into_inner();
     Ok(
-        web::block(move || get_upload(&conn, config.as_ref(), &upload))
+        web::block(move || get_upload(&mut conn, config.as_ref(), &upload))
             .await
             .map(|project| HttpResponse::Created().json(project))
             .map_err(|_| HttpResponse::InternalServerError())?,
@@ -205,9 +205,9 @@ async fn upload_short(
     shared_config: web::Data<crate::SharedConfig>,
     upload: Arc<xunit_repo_interface::Upload>,
 ) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
-    let conn = pool.get().unwrap();
+    let mut conn = pool.get().unwrap();
     let config = shared_config.into_inner();
-    crate::plumbing::upload::upload_short(&conn, config.as_ref(), &upload)
+    crate::plumbing::upload::upload_short(&mut conn, config.as_ref(), &upload)
 }
 
 pub async fn upload(
@@ -241,18 +241,16 @@ pub async fn upload(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::db::get_connection_pool;
     use actix_web::http;
     use actix_web::test;
     use actix_web::{http::header, web, App};
     use diesel::r2d2::ConnectionManager;
-    use diesel::SqliteConnection;
+    use diesel::PgConnection;
 
     #[actix_rt::test]
     async fn test_index() {
-        let database_url = "foo.db";
-        let database_pool = Pool::builder()
-            .build(ConnectionManager::<SqliteConnection>::new(database_url))
-            .unwrap();
+        let database_pool = get_connection_pool();
         let mut app = test::init_service(
             App::new()
                 .data(database_pool.clone())

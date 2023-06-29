@@ -6,7 +6,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 pub fn add_test_case(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_name: &String,
     new_fk_test_class: i32,
     new_fk_test_suite: i32,
@@ -20,7 +20,7 @@ pub fn add_test_case(
     {
         Ok(p) => return Ok(p),
         Err(_) => {
-            let insert_sk = Uuid::new_v4().to_string();
+            let insert_sk = Uuid::new_v4().to_simple().to_string();
             let new_test_case_new = TestCaseNew {
                 sk: insert_sk.as_str(),
                 name: new_name.as_str(),

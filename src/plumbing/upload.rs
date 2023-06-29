@@ -18,7 +18,7 @@ use crate::plumbing::test_suite::add_test_suite;
 use crate::DbConnection;
 
 pub fn upload_short(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     config: &crate::SharedConfig,
     item: &xunit_repo_interface::Upload,
 ) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
@@ -45,7 +45,7 @@ pub fn upload_short(
         None,
     )?;
     debug!("run:{:#?}", run);
-    let tr = add_test_run(&conn, run.id, env.id)?;
+    let tr = add_test_run(conn, run.id, env.id)?;
     debug!("tr:{:#?}", tr);
     let viewer_base_url = match &config.baseurl {
         Some(p) => Some(p.clone()),
@@ -63,7 +63,7 @@ pub fn upload_short(
 }
 
 pub fn get_upload(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     config: &crate::SharedConfig,
     item: &xunit_repo_interface::Upload,
 ) -> Result<xunit_repo_interface::UploadResponse, diesel::result::Error> {
@@ -90,7 +90,7 @@ pub fn get_upload(
         None,
     )?;
     debug!("run:{:#?}", run);
-    let tr = add_test_run(&conn, run.id, env.id)?;
+    let tr = add_test_run(conn, run.id, env.id)?;
     debug!("tr:{:#?}", tr);
     let viewer_base_url = match &config.baseurl {
         Some(p) => Some(p.clone()),

@@ -7,7 +7,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 pub fn add_test_run(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_fk_run_identifier: i32,
     new_fk_environment: i32,
 ) -> Result<TestRun, diesel::result::Error> {
@@ -19,7 +19,7 @@ pub fn add_test_run(
     {
         Ok(p) => return Ok(p),
         Err(_) => {
-            let new_sk = Uuid::new_v4().to_string();
+            let new_sk = Uuid::new_v4().to_simple().to_string();
             let new_created = Utc::now().timestamp();
 
             let new_test_run_new = TestRunNew {

@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 pub fn add_test_case_pass(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_fk_test_file_run: i32,
     new_fk_test_case: i32,
     tc_time: &Option<f32>,
@@ -37,11 +37,13 @@ pub fn add_test_case_pass(
 }
 
 pub fn add_test_case_pass_list(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     pass: &Vec<TestCasePassNew>,
 ) -> Result<usize, diesel::result::Error> {
     use crate::schema::test_case_pass::dsl::*;
-    diesel::insert_or_ignore_into(test_case_pass)
+    diesel::insert_into(test_case_pass)
         .values(pass)
+        .on_conflict((fk_test_case, fk_test_file_run))
+        .do_nothing()
         .execute(conn)
 }

@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 
 fn environment_get_by_sk_hash_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
     filter_hash_keyvalue: &String,
 ) -> Result<Environment, diesel::result::Error> {
@@ -22,7 +22,7 @@ fn environment_get_by_sk_hash_keyvalue(
 }
 
 fn environment_get_by_hash_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_hash_keyvalue: &String,
 ) -> Result<Environment, diesel::result::Error> {
     use crate::schema::environment::dsl::*;
@@ -32,7 +32,7 @@ fn environment_get_by_hash_keyvalue(
 }
 
 fn environment_get_by_sk(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     filter_sk: &String,
 ) -> Result<Environment, diesel::result::Error> {
     use crate::schema::environment::dsl::*;
@@ -42,7 +42,7 @@ fn environment_get_by_sk(
 }
 
 fn environment_insert_sk_hash_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_sk: &String,
     insert_hash_keyvalue: &String,
 ) -> Result<Environment, diesel::result::Error> {
@@ -63,11 +63,11 @@ fn environment_insert_sk_hash_keyvalue(
 }
 
 fn environment_insert_hash_keyvalue(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     insert_hash_keyvalue: &String,
 ) -> Result<Environment, diesel::result::Error> {
     use crate::schema::environment::dsl::*;
-    let insert_sk = Uuid::new_v4().to_string();
+    let insert_sk = Uuid::new_v4().to_simple().to_string();
     let new_link = EnvironmentNew {
         sk: &insert_sk,
         hash_keyvalue: &insert_hash_keyvalue,
@@ -94,7 +94,7 @@ fn keyvalue_hash_gen(keyvalue: &HashMap<String, String>) -> String {
 }
 
 fn insert_environment(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     sk: &String,
     keyvalue: &HashMap<String, String>,
     keyvalue_hash: &String,
@@ -129,7 +129,7 @@ fn insert_environment(
 }
 
 pub fn add_environment(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     environment_sk: Option<&String>,
     environment_key_value: Option<&HashMap<String, String>>,
 ) -> Result<Environment, diesel::result::Error> {
@@ -143,7 +143,7 @@ pub fn add_environment(
         }
 
         (None, Some(kv)) => {
-            let sk = Uuid::new_v4().to_string();
+            let sk = Uuid::new_v4().to_simple().to_string();
 
             let keyvalue_hash = keyvalue_hash_gen(kv);
             match environment_get_by_hash_keyvalue(conn, &keyvalue_hash) {

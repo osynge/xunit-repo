@@ -6,7 +6,7 @@ use diesel::RunQueryDsl;
 use uuid::Uuid;
 
 pub fn add_test_file_run(
-    conn: &DbConnection,
+    conn: &mut DbConnection,
     new_fk_test_file: i32,
     new_fk_test_run: i32,
 ) -> Result<TestFileRun, diesel::result::Error> {
@@ -18,7 +18,7 @@ pub fn add_test_file_run(
     {
         Ok(p) => return Ok(p),
         Err(_) => {
-            let sk_new = Uuid::new_v4().to_string();
+            let sk_new = Uuid::new_v4().to_simple().to_string();
             let new_test_file_run = TestFileRunNew {
                 sk: sk_new.as_str(),
                 fk_test_file: new_fk_test_file,
