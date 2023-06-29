@@ -241,6 +241,7 @@ pub async fn upload(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::db::get_connection_pool;
     use actix_web::http;
     use actix_web::test;
     use actix_web::{http::header, web, App};
@@ -249,10 +250,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_index() {
-        let database_url = "foo.db";
-        let database_pool = Pool::builder()
-            .build(ConnectionManager::<PgConnection>::new(database_url))
-            .unwrap();
+        let database_pool = get_connection_pool();
         let mut app = test::init_service(
             App::new()
                 .data(database_pool.clone())

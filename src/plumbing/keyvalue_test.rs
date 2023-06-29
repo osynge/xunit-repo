@@ -1,11 +1,9 @@
 use crate::plumbing::keyvalue;
+use crate::test::db::get_pooled_connection;
 
 #[test]
 fn add_key_value() {
-    let mut conn = xunit_repo_db::establish_connection_pool(&"sqlite://memory", true)
-        .unwrap()
-        .get()
-        .unwrap();
+    let mut conn = get_pooled_connection();
     let key_1 = String::from("Elephant");
     let value_1 = String::from("Babar");
     let add_1 = keyvalue::add_keyvalue(&mut conn, &key_1, &value_1);
@@ -14,10 +12,7 @@ fn add_key_value() {
 
 #[test]
 fn add_key_value_twice() {
-    let mut conn = xunit_repo_db::establish_connection_pool(&"sqlite://memory", true)
-        .unwrap()
-        .get()
-        .unwrap();
+    let mut conn = get_pooled_connection();
     let key_1 = String::from("Elephant");
     let value_1 = String::from("Babar");
     let value_2 = String::from("Celeste");

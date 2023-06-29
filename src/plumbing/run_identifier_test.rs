@@ -1,12 +1,10 @@
 use crate::plumbing::project;
 use crate::plumbing::run_identifier;
+use crate::test::db::get_pooled_connection;
 
 #[test]
 fn add_run_identifier() {
-    let mut conn = xunit_repo_db::establish_connection_pool(&"sqlite://memory", true)
-        .unwrap()
-        .get()
-        .unwrap();
+    let mut conn = get_pooled_connection();
     let project_sk = Some(String::from(""));
     let project_identifier = Some(String::from(""));
     let project_humanname = Some(String::from(""));
@@ -39,5 +37,5 @@ fn add_run_identifier() {
     .unwrap();
     println!("add_1={:#?}", add_1);
     println!("add_2={:#?}", add_2);
-    assert!(add_1.id == 1);
+    assert!(add_1.id == add_2.id);
 }
