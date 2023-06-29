@@ -1,10 +1,7 @@
-#[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate diesel_migrations;
 #[macro_use]
 extern crate log;
-use actix_files::Files;
 use actix_web_prom::PrometheusMetrics;
 use tracing_actix_web::TracingLogger;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
@@ -18,12 +15,12 @@ mod configuration;
 mod plumbing;
 mod routes;
 use actix_web::{web, App, HttpServer};
-use diesel::r2d2::{self, ConnectionManager};
 pub type DbConnection = xunit_repo_db::DbConnection;
 pub type Pool = xunit_repo_db::Pool;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
-
+#[cfg(test)]
+mod test;
 #[derive(Clone, Debug)]
 pub struct SharedConfig {
     pub baseurl: Option<String>,
