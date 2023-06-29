@@ -16,7 +16,7 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 anyhow = "1.0"
-chrono = "0.4.15"
+chrono = "0.4.26"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 xunit-repo-interface = { git = "https://github.com/osynge/xunit-repo-interface.git", branch = "main" }
 xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
