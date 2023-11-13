@@ -22,7 +22,7 @@ xunit-repo-interface = { git = "https://github.com/osynge/xunit-repo-interface.g
 xunit_repo_db = { git = "https://github.com/osynge/xunit-repo-db.git", branch = "main" }
 #xunit_repo_db = { path = "../xunit-repo-db" }
 diesel_migrations = "2.1.0"
-clap = "2"
+clap = "4"
 log = "*"
 thiserror = "*"
 toml = "*"
