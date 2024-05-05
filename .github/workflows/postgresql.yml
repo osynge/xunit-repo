@@ -27,7 +27,7 @@ jobs:
         run: sudo psql "postgresql://postgres_user:postgres_password@localhost:${{ job.services.postgres.ports[5432] }}/postgres_db" --command 'SELECT 1;'
         env:
           PGPASSWORD: postgres_password
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: cargo build --verbose
       - name: Run tests
